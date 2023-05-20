@@ -1,0 +1,112 @@
+__default__:
+  partition: "bigmemm"
+  nodes: 1
+  cpus: "{threads}"
+  mem: 16G
+  name: "{rule}.%j"
+  error: "98_logs/{rule}.%j.err"
+  output: "98_logs/{rule}.%j.out"
+  time: "2-0"
+  mail-type: FAIL,TIME_LIMIT
+  mail-user: dguan@ucdavis.edu
+
+
+trim_paired_reads:
+  partition: "med"
+  mem: 12G
+  time: 4:00:00
+
+trim_single_reads:
+  partition: "bmm"
+  mem: 8G
+  time: 4:00:00
+
+paired_star_align:
+  partition: "med"
+  mem: 30G
+  time: 12:00:00
+
+single_star_align:
+  partition: "bmm"
+  mem: 30G
+  time: 12:00:00
+
+idxbam:
+  partition: "high"
+  mem: 4G
+  time: 1:00:00
+
+stringtie_quant:
+  partition: "med"
+  mem: 12G
+  time: 3:00:00
+
+featureCounts_quant:
+  partition: "med"
+  mem: 12G
+  time: 3:00:00
+
+addrg:
+  partition: "bigmemm"
+  mem: 8G
+  time: 8:00:00
+
+markduplicates:
+  partition: "bigmemm"
+  mem: 16G
+  time: 1-00:00:00
+
+splitncigarreads:
+  partition: "bigmemm"
+  mem: 64G
+  time: 2-0
+
+baserecalibrator:
+  partition: "bigmemm"
+  mem: 64G
+  time: 2-0
+
+applybqsr:
+  partition: "bigmemm"
+  mem: 64G
+  time: 2-00:00:00
+
+knownsnpsites:
+  partition: "bigmemm"
+  mem: 2G
+  time: 4:00:00
+
+haplotypcaller2gvcf:
+  partition: "bigmemm"
+  mem: 64G
+  time: 3-00:00:00
+
+build_database:
+  partition: "bmm"
+  mem: 16G
+  time: 4-00:00:00
+
+genotyping:
+  partition: "med"
+  mem: 8G
+  time: 4-00:00:00
+
+HardFilter:
+  partition: "bmm"
+  mem: 24G
+  time: 10-00:00:00
+
+selectSNP:
+  partition: "bmm"
+  mem: 24G
+  time: 24:00:00
+  
+ASEcount:
+  partition: "med"
+  mem: 24G
+  time: 8:00:00
+
+genotypeGVCF:
+  partition: "med"
+  mem: 24G
+  time: 8:00:00
