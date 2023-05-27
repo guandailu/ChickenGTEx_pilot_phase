@@ -1,5 +1,6 @@
 # ChickenGTEx_pilot_phase
 
+
 This repository contains codes used in data analysis of the pilot phase of the ChickenGTEx. Codes includes the following sections:
 
 1) RNA-Seq raw data processing
