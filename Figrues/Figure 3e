@@ -1,0 +1,56 @@
+library(tidyverse)
+library(data.table)
+mydf = fread("functional_enrichment.sequence_ontology.ann.txt", header=T) %>% as.data.frame
+mydf %>% group_by(Ann, QTL) %>% summarize(mFC = mean(FC), lFC = sd(FC), hFC = sd(FC)) -> plot_df
+#plot_df = subset(plot_df, ! Ann %in% c("initiator_codon_variant"))
+plot_df$Ann = str_replace(plot_df$Ann, "_variant","") %>% str_replace(., "_gene","") %>% str_replace(., "non_coding_transcript_exon","NC_transcript")
+plot_df$Ann=factor(plot_df$Ann, levels=c("intron", "downstream", "upstream", "NC_transcript","intergenic_region", "synonymous", "missense",  "3_prime_UTR", "5_prime_UTR", "5_prime_UTR_premature_start_codon_gain", "initiator_codon", "start_lost", "stop_retained", "stop_lost", "stop_gained", "splice_region", "splice_donor", "splice_acceptor"))
+plot_df$mFC=log2(plot_df$mFC)
+plot_df$lFC=log2(plot_df$lFC)
+plot_df$hFC=log2(plot_df$hFC)
+plot_df$QTL=factor(plot_df$QTL, levels=c("eQTL", "sQTL", "lncQTL", "exQTL", "3aQTL"))
+
+p=ggplot(plot_df) +
+     geom_pointrange(aes(x=Ann, y = mFC, ymin=mFC-lFC, ymax=mFC+hFC, color = QTL), position=position_dodge(width=0.5))+
+     scale_color_manual(values=c("#B2182B" , "#D6604D", "#F4A582", "#92C5DE", "#4393C3"))+
+     geom_hline(yintercept=0, linetype="dashed", color = "red")+
+     #ylim(-8,12)+
+     ylab(expression("Log"[2]*"(Fold Enrichment)"))+
+     xlab("Chromatin states")+
+     coord_flip()+
+     theme_classic(base_size = 25, base_line_size = 1)+
+     theme(
+           axis.text.x = element_text(color="black", size=20),
+           axis.text.y = element_text(color="black", size=20),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank())
+ggsave("functional_enrichment.sequence_ontology.ann.pdf", p, width=12, height=8)
+
+
+
+library(data.table)
+library(tidyverse)
+library(ggbreak)
+
+mydf = fread("functional_enrichment.sequence_ontology.ann.txt", header=T) %>% as.data.frame
+mydf$prop = mydf$num_eqtl_within_SO / mydf$num_eqtls
+mydf %>% group_by(Ann,QTL) %>% summarize(m_prop=mean(prop), s_prop=sd(prop)) -> plot_df
+
+plot_df$Ann = str_replace(plot_df$Ann, "_variant","") %>% str_replace(., "_gene","") %>% str_replace(., "non_coding_transcript_exon","NC_transcript")
+plot_df$Ann=factor(plot_df$Ann, levels=c("intron", "downstream", "upstream", "NC_transcript","intergenic_region", "synonymous", "missense",  "3_prime_UTR", "5_prime_UTR", "5_prime_UTR_premature_start_codon_gain", "initiator_codon", "start_lost", "stop_retained", "stop_lost", "stop_gained", "splice_region", "splice_donor", "splice_acceptor"))
+plot_df$QTL=factor(plot_df$QTL, levels=c("eQTL", "sQTL", "lncQTL", "exQTL", "3aQTL"))
+
+p=ggplot(plot_df, aes(x=Ann, y = m_prop, fill = QTL)) +
+    geom_errorbar(aes(ymin = m_prop, ymax=m_prop+s_prop), color="black",position = position_dodge(.9), width = 0.2)+
+    geom_col(position = position_dodge())+
+    scale_fill_manual(values=c("#B2182B" , "#D6604D", "#F4A582", "#92C5DE", "#4393C3"))+
+    xlab("Chromatin states")+
+    ylab("Proportion of variants")+
+    coord_flip()+
+    theme_classic(base_size = 25, base_line_size = 1)+
+    theme(
+          axis.text.x = element_text(color="black", size=20, angle=45, hjust=1),
+          axis.text.y = element_text(color="black", size=20),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
+ggsave("functional_enrichment.sequence_ontology.variant_proportion.pdf", p, width=11, height=8)

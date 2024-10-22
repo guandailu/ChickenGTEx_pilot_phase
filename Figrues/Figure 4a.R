@@ -1,0 +1,13 @@
+library(ComplexHeatmap)
+library(tidyverse)
+library(data.table)
+library("gplots")
+tissue_colors <- read.table("Chicken_GTEx_colors.txt", header = T, sep = "\t", comment.char = "@")
+colors <- as.vector(tissue_colors$color_hex)
+names(colors) <- as.vector(tissue_colors[match(colors, tissue_colors$color_hex),"tissue_id"])
+sharing=readRDS("pairwise_sharing_factor0_m.s.RDS")
+cols <- colorRampPalette(c("white","yellow","red"))(100) 
+pdf("pairwise_sharing.pdf", width=6,height=6)
+heatmap.2(sharing, symm=T, Rowv = TRUE, Colv=TRUE, distfun = function(c) as.dist(1 - c), hclustfun = hclust, dendrogram = c("both"),  scale = c("none"), ColSideColors = colors, RowSideColors = colors,margins =c(12,9),,
+          trace = "none", density.info = "none", col=cols)
+dev.off()
